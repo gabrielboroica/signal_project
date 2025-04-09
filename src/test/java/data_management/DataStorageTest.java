@@ -1,25 +1,35 @@
 package data_management;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
-
 import com.data_management.DataStorage;
 import com.data_management.PatientRecord;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-class DataStorageTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DataStorageTest {
+    private DataStorage storage;
+
+    @BeforeEach
+    public void setUp() {
+        storage = new DataStorage();
+    }
 
     @Test
-    void testAddAndGetRecords() {
-        // TODO Perhaps you can implement a mock data reader to mock the test data?
-        // DataReader reader
-        DataStorage storage = new DataStorage(reader);
-        storage.addPatientData(1, 100.0, "WhiteBloodCells", 1714376789050L);
-        storage.addPatientData(1, 200.0, "WhiteBloodCells", 1714376789051L);
+    public void testAddAndGetRecords() {
+        // Add test data with current timestamp
+        long timestamp = System.currentTimeMillis();
+        storage.addPatientData(1, 120.0, "HeartRate", timestamp);
 
-        List<PatientRecord> records = storage.getRecords(1, 1714376789050L, 1714376789051L);
-        assertEquals(2, records.size()); // Check if two records are retrieved
-        assertEquals(100.0, records.get(0).getMeasurementValue()); // Validate first record
+        // Test retrieval - use the exact timestamp we just used
+        List<PatientRecord> records = storage.getRecords(1, timestamp-1000, timestamp+1000);
+
+        assertEquals(1, records.size(), "Should find 1 record");
+        PatientRecord record = records.get(0);
+        assertEquals(1, record.getPatientId());
+        assertEquals(120.0, record.getMeasurementValue(), 0.01);
+        assertEquals("HeartRate", record.getRecordType());
     }
 }
