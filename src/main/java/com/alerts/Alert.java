@@ -1,16 +1,19 @@
 package com.alerts;
 
-// Represents an alert
-public class Alert {
+public abstract class Alert {
     private String patientId;
     private String condition;
     private long timestamp;
 
-    public Alert(String patientId, String condition, long timestamp) {
-        this.patientId = patientId;
+    private String message;
+
+    public Alert(int patientId, String condition, long timestamp ) {
+        this.patientId = String.valueOf(patientId);
         this.condition = condition;
         this.timestamp = timestamp;
     }
+
+    public abstract void trigger();
 
     public String getPatientId() {
         return patientId;
@@ -22,5 +25,9 @@ public class Alert {
 
     public long getTimestamp() {
         return timestamp;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

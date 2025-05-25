@@ -7,10 +7,20 @@ import java.util.Map;
 import com.alerts.AlertGenerator;
 
 public class DataStorage {
+    private static DataStorage instance; // Singleton instance
+
     private Map<Integer, Patient> patientMap;
 
-    public DataStorage() {  // Removed Object reader parameter as it's unused
+    public DataStorage() {
         this.patientMap = new HashMap<>();
+    }
+
+    // Thread-safe lazy Singleton getter
+    public static synchronized DataStorage getInstance() {
+        if (instance == null) {
+            instance = new DataStorage();
+        }
+        return instance;
     }
 
     public void addPatientData(int patientId, double measurementValue,
@@ -36,18 +46,16 @@ public class DataStorage {
     }
 
     public static void main(String[] args) {
-        DataStorage storage = new DataStorage();
+        DataStorage storage = DataStorage.getInstance();
 
         // Add sample data
         storage.addPatientData(1, 120.0, "HeartRate", System.currentTimeMillis());
         storage.addPatientData(2, 80.0, "BloodPressure", System.currentTimeMillis() - 10000);
 
-        // Initialize AlertGenerator
         AlertGenerator alertGenerator = new AlertGenerator(storage);
 
-        // Evaluate all patients
         for (Patient patient : storage.getAllPatients()) {
-            alertGenerator.evaluateData(patient);
+            // alertGenerator.evaluateData(patient);
         }
     }
 }
